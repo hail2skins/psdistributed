@@ -1,31 +1,39 @@
 package main
 
 import (
-	"app/grades"
 	"app/log"
 	"app/registry"
 	"app/service"
+	"app/teacherportal"
 	"context"
 	"fmt"
 	stlog "log"
 )
 
 func main() {
-	host, port := "localhost", "6000"
+	err := teacherportal.ImportTemplates()
+	if err != nil {
+		stlog.Fatal(err)
+	}
+
+	host, port := "localhost", "5000"
 	serviceAddress := fmt.Sprintf("http://%v:%v", host, port)
 
 	var r registry.Registration
-	r.ServiceName = registry.GradingService
+	r.ServiceName = registry.TeacherPortal
 	r.ServiceURL = serviceAddress
 	r.HeartbeatURL = r.ServiceURL + "/heartbeat"
-	r.RequiredServices = make([]registry.ServiceName, 0)
+	r.RequiredServices = []registry.ServiceName{
+		registry.LogService,
+		registry.GradingService,
+	}
 	r.ServiceUpdateURL = r.ServiceURL + "/services"
 
 	ctx, err := service.Start(context.Background(),
 		host,
 		port,
 		r,
-		grades.RegisterHandlers)
+		teacherportal.RegisterHandlers)
 	if err != nil {
 		stlog.Fatal(err)
 	}
@@ -34,5 +42,6 @@ func main() {
 	}
 
 	<-ctx.Done()
-	fmt.Println("Shutting down grading service")
+	fmt.Println("Shutting down teacher portal")
+
 }

@@ -4,7 +4,7 @@ import (
 	"app/registry"
 	"context"
 	"fmt"
-	"log"
+	stlog "log"
 	"net/http"
 )
 
@@ -27,7 +27,7 @@ func startService(ctx context.Context, serviceName registry.ServiceName, host, p
 	srv.Addr = ":" + port
 
 	go func() {
-		log.Println(srv.ListenAndServe())
+		stlog.Println(srv.ListenAndServe())
 		cancel()
 	}()
 
@@ -37,7 +37,7 @@ func startService(ctx context.Context, serviceName registry.ServiceName, host, p
 		fmt.Scanln(&s)
 		err := registry.ShutdownService(fmt.Sprintf("http://%v:%v", host, port))
 		if err != nil {
-			log.Println(err)
+			stlog.Println(err)
 		}
 		srv.Shutdown(ctx)
 		cancel()

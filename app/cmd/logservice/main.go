@@ -18,6 +18,7 @@ func main() {
 	var r registry.Registration
 	r.ServiceName = registry.LogService
 	r.ServiceURL = serviceAddress
+	r.HeartbeatURL = r.ServiceURL + "/heartbeat"
 	r.RequiredServices = make([]registry.ServiceName, 0)
 	r.ServiceUpdateURL = r.ServiceURL + "/services"
 
